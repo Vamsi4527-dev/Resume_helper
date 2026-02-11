@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ResumeDost – AI Resume Analyzer</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="logo">ResumeDost</div>
+</header>
+
+<section class="landing">
+    <div class="hero">
+
+        <h1>
+            Analyze your resume in seconds,<br>
+            not minutes.
+        </h1>
+
+        <p>
+            Upload your resume and job description to get ATS-based scores,
+            skill gap analysis, and clear improvement suggestions.
+        </p>
+
+        <button class="get-started-btn" onclick="showAnalyzer()">
+            Get Started →
+        </button>
+
+        <div class="hero-features">
+            <span>⚡ ATS Score</span>
+            <span>🎯 JD Match</span>
+            <span>🤖 Skill Gaps</span>
+        </div>
+
+        <div class="hero-preview">
+            <div class="preview-card">
+                Resume Analysis Preview
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<section id="analyzer" style="display:none;">
+
+    <h1 style="text-align:center; margin-bottom:20px;">
+        Analyze Your Resume Now
+    </h1>
+
+    <form id="resumeForm">
+
+        <input type="file" id="resume" accept=".pdf" required>
+        <br><br>
+
+        <textarea
+            id="jd"
+            rows="8"
+            placeholder="Paste Job Description here..."
+            required>
+        </textarea>
+        <br><br>
+
+        <button type="submit">Analyze Resume</button>
+    </form>
+
+    <p id="status"></p>
+
+    <!-- =====================
+         RESULTS
+    ===================== -->
+    <div id="results" class="results hidden">
+
+        <!-- SCORE CARDS -->
+        <div class="score-cards">
+            <div class="card">
+                <h3>Resume Score</h3>
+                <p id="resumeScore">--</p>
+            </div>
+            <div class="card">
+                <h3>JD Match</h3>
+                <p id="jdMatch">--%</p>
+            </div>
+        </div>
+
+        <!-- STRENGTHS -->
+        <div class="section">
+            <h3>✅ Strengths</h3>
+            <div id="strengths"></div>
+        </div>
+
+        <!-- MISSING SKILLS -->
+        <div class="section">
+            <h3>❌ Missing Skills</h3>
+            <div id="missing"></div>
+        </div>
+
+        <!-- IMPROVEMENTS -->
+        <div class="section">
+            <h3>✍️ Improvement Suggestions</h3>
+            <div id="suggestions"></div>
+        </div>
+
+        <!-- ATS -->
+        <div class="section">
+            <h3>🤖 ATS Optimization Tips</h3>
+            <div id="ats"></div>
+        </div>
+
+    </div>
+</section>
+
+<!-- =====================
+     SCRIPT
+===================== -->
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>
