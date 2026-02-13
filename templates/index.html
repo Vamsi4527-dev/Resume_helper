@@ -1,121 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ResumeDost – AI Resume Analyzer</title>
+    <meta name="description"
+        content="Analyze your resume with AI. Get ATS scores, skill gap analysis, and improvement suggestions instantly.">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
+
 <body>
 
-<header class="site-header">
-    <div class="logo">ResumeDost</div>
-</header>
+    <header class="site-header" id="header">
+        <div class="logo">ResumeDost</div>
+        <button class="nav-home-btn" onclick="goHome()">Home</button>
+    </header>
 
-<section class="landing">
-    <div class="hero">
+    <section class="landing">
+        <div class="hero">
+            <h1>
+                Your resume deserves a
+                <span class="highlight">perfect score</span>
+            </h1>
 
-        <h1>
-            Analyze your resume in seconds,<br>
-            not minutes.
-        </h1>
+            <p>
+                Get instant AI-powered feedback on your resume. Discover your ATS compatibility,
+                match percentage with job descriptions, and receive actionable tips to land your dream job.
+            </p>
 
-        <p>
-            Upload your resume and job description to get ATS-based scores,
-            skill gap analysis, and clear improvement suggestions.
-        </p>
+            <div class="cta-group">
+                <button class="get-started-btn" onclick="showAnalyzer()">
+                    Start Free Analysis
+                </button>
+                <button class="secondary-btn" onclick="scrollToDemo()">
+                    See How It Works
+                </button>
+            </div>
 
-        <button class="get-started-btn" onclick="showAnalyzer()">
-            Get Started →
-        </button>
-
-        <div class="hero-features">
-            <span>⚡ ATS Score</span>
-            <span>🎯 JD Match</span>
-            <span>🤖 Skill Gaps</span>
-        </div>
-
-        <div class="hero-preview">
-            <div class="preview-card">
-                Resume Analysis Preview
+            <div class="hero-features">
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-text">
+                        <strong>Instant</strong>
+                        <span>Results in seconds</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-text">
+                        <strong>Accurate</strong>
+                        <span>AI-powered analysis</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <div class="feature-text">
+                        <strong>Secure</strong>
+                        <span>Your data is safe</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-    </div>
-</section>
+        <div class="hero-visual">
+            <div class="visual-container">
+                <div class="floating-card card-1">
+                    <div class="card-score">95</div>
+                    <div class="card-label">ATS Score</div>
+                    <ul class="card-list">
+                        <li>Strong keywords</li>
+                        <li>Clear formatting</li>
+                        <li>Optimized structure</li>
+                    </ul>
+                </div>
 
+                <div class="floating-card card-2">
+                    <div class="card-score">88%</div>
+                    <div class="card-label">JD Match</div>
+                    <ul class="card-list">
+                        <li>Python expertise</li>
+                        <li>Cloud experience</li>
+                        <li>Team leadership</li>
+                        <li>Agile methodology</li>
+                    </ul>
+                </div>
 
-<section id="analyzer" style="display:none;">
+                <div class="floating-card card-3">
+                    <div class="card-label">Missing Skills</div>
+                    <ul class="card-list">
+                        <li>Docker</li>
+                        <li>Kubernetes</li>
+                        <li>CI/CD pipelines</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <h1 style="text-align:center; margin-bottom:20px;">
-        Analyze Your Resume Now
-    </h1>
+    <section id="analyzer">
+        <h1>Analyze Your Resume Now</h1>
 
-    <form id="resumeForm">
+        <form id="resumeForm">
+            <input type="file" id="resume" accept=".pdf" required>
 
-        <input type="file" id="resume" accept=".pdf" required>
-        <br><br>
-
-        <textarea
-            id="jd"
-            rows="8"
-            placeholder="Paste Job Description here..."
-            required>
+            <textarea id="jd" rows="8" placeholder="Paste the Job Description here..." required>
         </textarea>
-        <br><br>
 
-        <button type="submit">Analyze Resume</button>
-    </form>
+            <button type="submit">Analyze Resume</button>
+        </form>
 
-    <p id="status"></p>
+        <p id="status"></p>
 
-    <!-- =====================
-         RESULTS
-    ===================== -->
-    <div id="results" class="results hidden">
+        <div id="results" class="results hidden">
 
-        <!-- SCORE CARDS -->
-        <div class="score-cards">
-            <div class="card">
-                <h3>Resume Score</h3>
-                <p id="resumeScore">--</p>
+            <div class="score-cards">
+                <div class="card scroll-reveal">
+                    <h3>Resume Score</h3>
+                    <p id="resumeScore">--</p>
+                </div>
+                <div class="card scroll-reveal">
+                    <h3>JD Match</h3>
+                    <p id="jdMatch">--%</p>
+                </div>
             </div>
-            <div class="card">
-                <h3>JD Match</h3>
-                <p id="jdMatch">--%</p>
+
+            <div class="section scroll-reveal">
+                <h3>✅ Strengths</h3>
+                <div id="strengths" class="box-list"></div>
             </div>
+
+            <div class="section scroll-reveal">
+                <h3>❌ Missing Skills</h3>
+                <div id="missing" class="box-list"></div>
+            </div>
+
+            <div class="section scroll-reveal">
+                <h3>✍️ Improvement Suggestions</h3>
+                <div id="suggestions" class="box-list"></div>
+            </div>
+
+            <div class="section scroll-reveal">
+                <h3>🤖 ATS Optimization Tips</h3>
+                <div id="ats" class="box-list"></div>
+            </div>
+
         </div>
+    </section>
 
-        <!-- STRENGTHS -->
-        <div class="section">
-            <h3>✅ Strengths</h3>
-            <div id="strengths"></div>
-        </div>
-
-        <!-- MISSING SKILLS -->
-        <div class="section">
-            <h3>❌ Missing Skills</h3>
-            <div id="missing"></div>
-        </div>
-
-        <!-- IMPROVEMENTS -->
-        <div class="section">
-            <h3>✍️ Improvement Suggestions</h3>
-            <div id="suggestions"></div>
-        </div>
-
-        <!-- ATS -->
-        <div class="section">
-            <h3>🤖 ATS Optimization Tips</h3>
-            <div id="ats"></div>
-        </div>
-
-    </div>
-</section>
-
-<!-- =====================
-     SCRIPT
-===================== -->
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 </body>
+
 </html>
