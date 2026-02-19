@@ -4,8 +4,11 @@ from pypdf import PdfReader
 import os
 import re
 
-app = Flask(__name__)
-
+app = Flask(
+    __name__,
+    template_folder="../templates",
+    static_folder="../static"
+)
 
 def clean_text(text):
     text = text.lower()
