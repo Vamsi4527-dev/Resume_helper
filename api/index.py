@@ -1,37 +1,10 @@
 from flask import Flask, render_template, request, jsonify
 from google import genai
 from pypdf import PdfReader
-from dotenv import load_dotenv
 import os
 import re
-from werkzeug.utils import secure_filename
-
-load_dotenv()
 
 app = Flask(__name__)
-
-
-UPLOAD_FOLDER = "uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-
-API_KEY = os.getenv("GEMINI_API_KEY")
-if not API_KEY:
-    raise ValueError("GEMINI_API_KEY not set in .env file")
-
-client = genai.Client(api_key=API_KEY)
-
-
-
-def extract_text_from_pdf(path):
-    reader = PdfReader(path)
-    text = ""
-    for page in reader.pages:
-        extracted = page.extract_text()
-        if extracted:
-            text += extracted
-    return text
-
 
 
 def clean_text(text):
@@ -39,7 +12,6 @@ def clean_text(text):
     text = re.sub(r"[^a-z0-9\s]", " ", text)
     text = re.sub(r"\s+", " ", text)
     return text.strip()
-
 
 
 def extract_keywords(jd_text):
@@ -59,7 +31,6 @@ def extract_keywords(jd_text):
     return keywords
 
 
-
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -68,6 +39,13 @@ def home():
 @app.route("/analyze", methods=["POST"])
 def analyze():
     try:
+        
+        API_KEY = os.getenv("GEMINI_API_KEY")
+        if not API_KEY:
+            return jsonify({"error": "Server configuration error: API key missing"}), 500
+
+        client = genai.Client(api_key=API_KEY)
+
         if "resume" not in request.files or "jd" not in request.form:
             return jsonify({"error": "Resume or Job Description missing"}), 400
 
@@ -80,13 +58,14 @@ def analyze():
         if not file.filename.lower().endswith(".pdf"):
             return jsonify({"error": "Only PDF files are allowed"}), 400
 
+        # 📄 Read PDF in memory (Vercel-safe)
+        reader = PdfReader(file)
+        resume_text = ""
 
-        filename = secure_filename(file.filename)
-        path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        file.save(path)
-
-        resume_text = extract_text_from_pdf(path)
-        os.remove(path)
+        for page in reader.pages:
+            extracted = page.extract_text()
+            if extracted:
+                resume_text += extracted
 
         if not resume_text.strip():
             return jsonify({"error": "Could not extract text from resume"}), 400
@@ -100,11 +79,12 @@ def analyze():
             if re.search(rf"\b{re.escape(keyword)}\b", resume_clean):
                 matched_keywords.add(keyword)
 
-        if len(jd_keywords) == 0:
-            jd_percentage = 0
-        else:
-            jd_percentage = int((len(matched_keywords) / len(jd_keywords)) * 100)
+        jd_percentage = (
+            int((len(matched_keywords) / len(jd_keywords)) * 100)
+            if len(jd_keywords) > 0 else 0
+        )
 
+        # 🎯 Scoring Logic
         score = 50
 
         if len(resume_text) > 1500:
@@ -183,6 +163,4 @@ JD Match Percentage: {jd_percentage}%
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-if __name__ == "__main__":
-    app.run(debug=True)
+app = app
